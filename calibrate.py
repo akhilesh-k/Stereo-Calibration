@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 import numpy as np
 import os,cv2,yaml,argparse
 from glob import glob
