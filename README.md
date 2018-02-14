@@ -13,20 +13,6 @@ This repository contains some sources to calibrate the intrinsics of individual 
 ### Example of RGBD camera calibration
 python3 calibrate.py
 
-### Devices 
-f200.yaml is for Real Sense F200 with serial 040140087709
-
-
-### Get images from webcams
-
-This is a small helper tool to grab frames from two webcams operating as a stereo pair.
-Once it is running, hit any key to grab frames. Images are saved with prefixes `left` and `right` in the desired directory.
-
-### Intrinsic calibration of a single camera
-
-
-For example, the command for the test images in `calib_imgs/1/` would be
-
 
 ### Stereo calibration for extrinisics
 
