@@ -86,7 +86,7 @@ def main():
         img_names.extend(glob(p))
     debug_dir = args.debug
     square_size = args.square_size
-    print "square_size is",square_size
+    print ("square_size is",square_size)
 
     pattern_size_cols_rows = (args.pattern_size[0],args.pattern_size[1])
     pattern_points = np.zeros( (np.prod(pattern_size_cols_rows), 3), np.float32 )
@@ -122,7 +122,7 @@ def main():
     #giacomo
     #for both sub and cal cv::TermCriteria term_criteria(cv::TermCriteria::COUNT + cv::TermCriteria::EPS, 50, DBL_EPSILON);
 
-    print "images",img_names
+    print ("images",img_names)
     j = 0
     img_namesr = []
     for fn in (sorted(img_names)):
@@ -138,10 +138,10 @@ def main():
         if fn.endswith(".yaml"):
             continue
         j = j +1
-        print fn,'processing',j
+        print (fn,'processing',j)
         img = cv2.imread(fn,-1)
         if img is None:
-          print fn,"failed to load"
+          print (fn,"failed to load")
           continue
         h, w = img.shape[:2]
         if args.side == "left":
@@ -158,16 +158,16 @@ def main():
             w = w/2
 
         if target is not None and (h,w) != target:
-            print fn, (h,w),"->",target
+            print (fn, (h,w),"->",target)
             img = cv2.resize(img,target)
             h,w = target
         else:
             if lastsize is None:
                 lastsize = (h,w)
-                print "using",(h,w)
+                print ("using",(h,w))
             else:
                 if lastsize != (h,w):
-                    print fn, "all images should be the same size, enforcing"
+                    print (fn, "all images should be the same size, enforcing")
                     target = lastsize
                     img = cv2.resize(img,target)
                     h,w = target
@@ -177,7 +177,7 @@ def main():
             pattern_size_cols_rows
         if args.threshold > 0:
             retval,img = cv2.threshold(img, args.threshold, 255, cv2.THRESH_BINARY);
-            print "thresholded ",img.shape,gray.dtype
+            print ("thresholded ",img.shape,gray.dtype)
             cv2.imshow("ciao",img)
             cv2.waitKey(0)
         #255-gray if we flipped it
@@ -186,16 +186,16 @@ def main():
             # Giacomo (11,11)
             cv2.cornerSubPix(img, corners, (5, 5), (-1, -1), criteriasub)
         if not found:
-            print fn,'chessboard not found'
+            print (fn,'chessboard not found')
             continue
         if args.outputpath:
-            yamlfile = os.path.join(args.outputpath,s.path.splitext(os.path.split(fn)[1])[0]+".yaml")
+            yamlfile = os.path.join(args.outputpath,os.path.splitext(os.path.split(fn)[1])[0]+".yaml")
         else:
             yamlfile = os.path.splitext(fn)[0]+".yaml"
 
         info = dict(width=w,height=h,image_points=corners.reshape(-1,2).tolist(),world_points=pattern_points.tolist())
         yaml.dump(info,open(yamlfile,"wb"))
-        print "\tgenerated yaml"
+        print ("\tgenerated yaml")
         img_points.append(corners.reshape(-1, 2))
         obj_points.append(pattern_points)
         yaml_done.append(yamlfile)
@@ -206,24 +206,24 @@ def main():
             name,ext = os.path.splitext(name)
             dd = '%s/%s_chess.png' % (debug_dir, name)
             cv2.imwrite(dd, vis)
-            print "\twriting debug",dd
+            print ("\twriting debug",dd)
 
     if not args.nocalibrate:    
 
         #CV_CALIB_USE_INTRINSIC_GUESS
         if len(obj_points) == 0:
-            print "cannot find corners"
+            print ("cannot find corners")
             return
         flags = 0
         if args.nodistortion:
             flags = cv2.CALIB_FIX_K1 | cv2.CALIB_FIX_K2 | cv2.CALIB_FIX_K3 | cv2.CALIB_FIX_K4 | cv2.CALIB_FIX_K5 | cv2.CALIB_FIX_K6 | cv2.CALIB_ZERO_TANGENT_DIST
         if args.calib:
             flags = flags  | cv2.CV_CALIB_USE_INTRINSIC_GUESS
-        print "calibrating...",len(img_points),"images"
+        print ("calibrating...",len(img_points),"images")
         rms, camera_matrix, dist_coefs, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, (w, h), calib["camera_matrix"], calib["dist"],criteria=criteriacal,flags=flags)
-        print "error:", rms
-        print "camera matrix:\n", camera_matrix
-        print "distortion coefficients:", dist_coefs.transpose()
+        print ("error:", rms)
+        print ("camera matrix:\n", camera_matrix)
+        print ("distortion coefficients:", dist_coefs.transpose())
         #cv2.destroyAllWindows()
 
         #apertureWidth
@@ -236,7 +236,7 @@ def main():
         outname = args.save
         if outname is not None:
             ci = dict(image_width=w,image_height=h,pattern_size=list(pattern_size_cols_rows),rms=rms,camera_matrix=camera_matrix.tolist(),dist=dist_coefs.ravel().tolist(),square_size=square_size)
-            print ci
+            print (ci)
             yaml.dump(ci,open(outname,"wb"))
 
         for i,y in enumerate(yaml_done):
